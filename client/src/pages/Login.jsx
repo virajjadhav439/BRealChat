@@ -1,19 +1,38 @@
-import React, { useState } from 'react'
-
+import React, { useEffect, useState } from 'react'
+import {useNavigate} from 'react-router-dom'
+import API from '../api/api'
 const Login = () => {
     const [formData,setFormData] = useState({
     identifier:'',
     password:'',
 })
+const navigate = useNavigate()
 const handleChange = (e)=>{
     setFormData({
         ...formData,
         [e.target.name]:e.target.value
     })
 }
-const handleSubmit = (e)=>{
+const handleSubmit = async (e)=>{
     e.preventDefault()
-    console.log(formData);
+    try {
+            //  send post request to backend/server
+            const response = await API.post('/auth/login',{
+            identifier: formData.identifier,
+            password: formData.password
+        })
+        console.log(response.data)
+        localStorage.setItem("token",response.data.token)
+        //login successful confirmation message
+    alert("Account login Successfully")
+    
+
+    navigate('/Chats')
+        } catch (error) {
+            alert(error?.response?.data?.message || 'Login Failed')
+            console.log(error);
+            
+        }
     
 }
   return (<>
@@ -32,7 +51,7 @@ const handleSubmit = (e)=>{
             {/* Password Input */}
             <input type="password" placeholder='Password' className='w-full border p-2 mb-3'onChange={handleChange} value={formData.password} name='password'/>
             {/* Submit Button */}
-            <button className='w-full p-2 bg-black text-white cursor-pointer'>Login</button>
+            <button type='submit' className='w-full p-2 bg-black text-white cursor-pointer'>Login</button>
         </form>
     </div>
     </div>

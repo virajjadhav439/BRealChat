@@ -58,6 +58,7 @@ const loginUser = async(req,res)=>{
                 message:"Wrong Password"
             })
         }
+        
         const token = jwt.sign({
             userId:user._id
         },process.env.JWT_SECRET,{
