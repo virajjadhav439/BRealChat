@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import API from '../api/api'
 import { useNavigate } from 'react-router-dom'
+import toast from 'react-hot-toast'
 
 const Signup = () => {
     const [formData,setFormData] = useState({
@@ -23,7 +24,7 @@ const handleSubmit = async (e)=>{
     try {
       //Check if passwords match
       if(formData.password !== formData.confirmPassword){
-    return alert("Passwords do not match")
+    return toast.error("Passwords do not match")
 }
             //  send post request to backend/server
             await API.post('/auth/signup',{
@@ -33,42 +34,105 @@ const handleSubmit = async (e)=>{
         })
         
         //login successful confirmation message
-    alert("Account Signup Successfully")
+    toast.success("Account Signup Successfully")
     navigate('/login')
         } catch (error) {
-            alert(error?.response?.data?.message || 'Signup Failed')
+            toast.error(error?.response?.data?.message || 'Signup Failed')
         }
     
 }
-  return (<>
-  {/* Signup Page */}
-  <div className='min-h-screen flex items-center justify-center'>
-    {/* Signup Container */}
-    <div className='w-full max-w-md p-6 border rounded-lg'>
-        {/* Signup Heading */}
-        <h1 className='text-2xl font-bold mb-4'>Signup</h1>
-        {/* Signup sub-heading */}
-        <h3 className='text-s mb-4'>Start Connecting.Start Chatting</h3>
-        {/* signup Form */}
-        <form action="" onSubmit={handleSubmit}>
-            {/* Username input */}
-            <input type="text" name='username'  value={formData.username} placeholder='Username' className='w-full border p-2 mb-3' onChange={handleChange}/>
-            {/* Email Input */}
-            <input type="email" name='email' value={formData.email} placeholder='Email' className='w-full border p-2 mb-3' onChange={handleChange}/>
-            {/* Password */}
-            <input type="password" name='password' value={formData.password} placeholder='Password' className='w-full border p-2 mb-3' onChange={handleChange}/>
-            {/* Confirm Password */}
-            <input type="password" name='confirmPassword' value={formData.confirmPassword} placeholder='Confirm Password' className='w-full border p-2 mb-3' onChange={handleChange}/>
-            {/* Profile Pic */}
-            
-            {/* signup Button */}
-            <button type='submit' className="w-full p-2 bg-black text-white">Signup</button>
+  return (
+  <>
+    <div
+      className={`min-h-screen flex items-center justify-center ${
+        darkMode ? "bg-zinc-900" : "bg-gray-100"
+      }`}
+    >
+      <div
+        className={`w-full max-w-md p-8 rounded-2xl shadow-lg ${
+          darkMode
+            ? "bg-zinc-800 text-white"
+            : "bg-white text-black"
+        }`}
+      >
+        <h1 className="text-3xl font-bold mb-2 text-center">
+          Signup
+        </h1>
+
+        <h3
+          className={`text-center mb-6 ${
+            darkMode
+              ? "text-zinc-400"
+              : "text-gray-500"
+          }`}
+        >
+          Start Connecting. Start Chatting.
+        </h3>
+
+        <form onSubmit={handleSubmit}>
+          <input
+            type="text"
+            name="username"
+            value={formData.username}
+            placeholder="Username"
+            onChange={handleChange}
+            className={`w-full p-3 rounded-lg border mb-4 outline-none ${
+              darkMode
+                ? "bg-zinc-700 border-zinc-600 text-white"
+                : "bg-white border-gray-300"
+            }`}
+          />
+
+          <input
+            type="email"
+            name="email"
+            value={formData.email}
+            placeholder="Email"
+            onChange={handleChange}
+            className={`w-full p-3 rounded-lg border mb-4 outline-none ${
+              darkMode
+                ? "bg-zinc-700 border-zinc-600 text-white"
+                : "bg-white border-gray-300"
+            }`}
+          />
+
+          <input
+            type="password"
+            name="password"
+            value={formData.password}
+            placeholder="Password"
+            onChange={handleChange}
+            className={`w-full p-3 rounded-lg border mb-4 outline-none ${
+              darkMode
+                ? "bg-zinc-700 border-zinc-600 text-white"
+                : "bg-white border-gray-300"
+            }`}
+          />
+
+          <input
+            type="password"
+            name="confirmPassword"
+            value={formData.confirmPassword}
+            placeholder="Confirm Password"
+            onChange={handleChange}
+            className={`w-full p-3 rounded-lg border mb-6 outline-none ${
+              darkMode
+                ? "bg-zinc-700 border-zinc-600 text-white"
+                : "bg-white border-gray-300"
+            }`}
+          />
+
+          <button
+            type="submit"
+            className="w-full p-3 bg-green-500 hover:bg-green-600 transition rounded-lg text-white font-semibold cursor-pointer"
+          >
+            Signup
+          </button>
         </form>
-    </div>
+      </div>
     </div>
   </>
-    
-  )
+)
 }
 
 export default Signup

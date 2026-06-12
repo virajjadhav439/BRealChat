@@ -6,16 +6,20 @@ import './App.css'
 import { BrowserRouter,Route,Routes } from 'react-router-dom'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
-
+import Chats from './pages/Chats'
+import {Toaster} from 'react-hot-toast'
 function App() {
+  const [darkMode,setDarkMode] = useState(false)
 
   return (
     <>
       <BrowserRouter>
         <Routes>
-          <Route path='/login' element={<Login/>}/>
-          <Route path='/signup' element={<Signup/>}/>
+          <Route path='/login' element={<Login darkMode={darkMode} setDarkMode={setDarkMode}/>}/>
+          <Route path='/signup' element={<Signup darkMode={darkMode} setDarkMode={setDarkMode}/>}/>
+          <Route path='/chats' element={<Chats darkMode={darkMode} setDarkMode={setDarkMode}/>}/>
         </Routes>
+        <Toaster position='top-center'/>
       </BrowserRouter>
     </>
   )
