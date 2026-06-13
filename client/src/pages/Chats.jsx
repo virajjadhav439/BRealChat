@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import API from '../api/api'
 import socket from '../socket/socket'
 
+
 const Chats = ({ darkMode, setDarkMode }) => {
     const [users,setUsers] = useState([])
     const [selectedUser,setSelectedUser] = useState()
@@ -11,7 +12,10 @@ const Chats = ({ darkMode, setDarkMode }) => {
     const [search,setSearch] =useState('')
     const messagesEndRef =useRef(null)
     const [onlineUsers,setOnlineUsers]= useState([])
-
+    const [isTyping,setIsTyping] = useState(false)
+    const typingTimeoutRef = useRef(null)
+    const [typingUser,setTypingUser] = useState("")
+    
     // Information OF Current User
     const currentUser = JSON.parse(
         localStorage.getItem("user")
@@ -138,8 +142,6 @@ const Chats = ({ darkMode, setDarkMode }) => {
 
 useEffect(() => {
 
-    console.log("Socket Object:", socket)
-
     socket.on("connect", () => {
         console.log(
             "Connected:",
@@ -180,13 +182,37 @@ useEffect(()=>{
 // Listen For Online Users
 useEffect(()=>{
     socket.on("onlineUsers",(users)=>{
-        console.log("Online Users: ",users);
+        
         setOnlineUsers(users)
     })
     return ()=>{
         socket.off("onlineUsers")
     }
 },[])
+
+useEffect(()=>{
+    socket.on(
+        "userTyping",
+        ()=>{
+            
+            setIsTyping(true)
+        }
+    )
+    socket.on("userStoppedTyping",()=>{
+        
+        setIsTyping(false)})
+    return ()=>{
+        socket.off("userTyping")
+        socket.off("userStoppingTyping")
+    }
+},[])
+socket.on("userTyping",(username)=>{
+    setTypingUser(username)
+})
+socket.on("userStoppedTyping",()=>{
+    setTypingUser("")
+})
+
 
   return (<>
     {/* Chats page */}
@@ -290,6 +316,7 @@ useEffect(()=>{
 
         {/* Chat window Container */}
         <div className='flex-1 flex flex-col'>
+
             {/* Chat Window Heading */}
             <h1
   className={`p-4 text-xl font-semibold border-b ${
@@ -301,7 +328,16 @@ useEffect(()=>{
     {selectedUser
         ? selectedUser.username
         : "Select a Chat"}
+
+{
+    isTyping && (
+        <p className="text-sm text-gray-500 px-0.5">
+            {typingUser} Typing...
+        </p>
+    )
+}
 </h1>
+
             {/* Chat Container */}
             <div>
             {/* one Message one Div */}
@@ -349,7 +385,24 @@ useEffect(()=>{
             {/* Text Box */}
             <textarea
   value={text}
-  onChange={(e)=>setText(e.target.value)}
+  onChange={(e)=>{
+    
+    
+    setText(e.target.value)
+
+    socket.emit("typing",currentUser.username)
+    
+    clearTimeout(typingTimeoutRef.current)
+
+    typingTimeoutRef.current = setTimeout(()=>{
+
+        socket.emit(
+            "stopTyping"
+        )
+
+    },1000)
+    
+  }}
   placeholder="Type a message..."
   className={`w-full p-3 rounded-lg border outline-none ${
     darkMode

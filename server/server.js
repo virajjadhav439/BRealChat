@@ -27,7 +27,7 @@ const onlineUsers =  new Map()
 io.on("connection",(socket)=>{
     // Add Listner
     socket.on("sendMessage",(message)=>{
-        console.log("Realtime Message:",message);
+        
         
         // Add Sender
         io.emit(
@@ -56,6 +56,17 @@ io.on("connection",(socket)=>{
         }
         io.emit("onlineUsers",Array.from(onlineUsers.keys()))
     })
+
+    socket.on("typing",(username)=>{
+        io.emit("userTyping",username)
+    })
+
+    socket.on("stopTyping",()=>{
+        io.emit(
+            "userStoppedTyping"
+        )
+    })
+
 })
 
 app.use(cors())
