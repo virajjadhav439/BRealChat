@@ -3,7 +3,7 @@ import API from '../api/api'
 import { useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 
-const Signup = () => {
+const Signup = ({ darkMode, setDarkMode }) => {
     const [formData,setFormData] = useState({
         username:'',
         email:'',

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import API from '../api/api'
+import socket from '../socket/socket'
 
 const Chats = ({ darkMode, setDarkMode }) => {
     const [users,setUsers] = useState([])
@@ -78,7 +79,6 @@ const Chats = ({ darkMode, setDarkMode }) => {
             setMessages(response.data)
             
             
-            
         } catch (error) {
             console.log(error);
             
@@ -90,31 +90,36 @@ const Chats = ({ darkMode, setDarkMode }) => {
     },[])
 
     const sendMessage = async ()=>{
-        try {
-            //Removes any Space in text from left and right
-            if (!text.trim()) {
-                return
+
+    if(!text.trim()) return
+
+    const token = localStorage.getItem("token")
+
+    await API.post(
+        "/messages",
+        {
+            conversationId:conversation._id,
+            text:text
+        },
+        {
+            headers:{
+                Authorization:`Bearer ${token}`
             }
-            // Fetch the Token
-            const token = localStorage.getItem('token')
-            //Send Post request via axios api to post message
-            await API.post('/messages',{
-                conversationId:conversation._id,
-                text:text
-            },{
-                headers:{
-                    Authorization:`Bearer ${token}`
-                }
-            }
-        )
-        await fetchMessages(conversation._id)
-        // Clear the Text Box after Sending 
-        setText('')
-        } catch (error) {
-            console.log(error);
-            
         }
-    }
+    )
+
+    socket.emit(
+        "sendMessage",
+        {
+            text:text,
+            sender:currentUser._id
+        }
+    )
+
+    await fetchMessages(conversation._id)
+
+    setText('')
+}
 
     //Load when ConVersation Changes
     useEffect(()=>{
@@ -127,8 +132,45 @@ const Chats = ({ darkMode, setDarkMode }) => {
     messagesEndRef.current?.scrollIntoView({
         behavior:"smooth"
     })
+
 },[messages])
 
+useEffect(() => {
+
+    console.log("Socket Object:", socket)
+
+    socket.on("connect", () => {
+        console.log(
+            "Connected:",
+            socket.id
+        )
+    })
+
+}, [])
+
+useEffect(()=>{
+
+    socket.on(
+        "receiveMessage",
+        (message)=>{
+
+            setMessages((prev)=>[
+                ...prev,
+                {
+                    _id:Date.now(),
+                    text:message.text,
+                    sender:message.sender
+                }
+            ])
+
+        }
+    )
+
+    return ()=>{
+        socket.off("receiveMessage")
+    }
+
+},[])
   return (<>
     {/* Chats page */}
     <div>

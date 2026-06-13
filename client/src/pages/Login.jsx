@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import {useNavigate} from 'react-router-dom'
 import API from '../api/api'
 import toast from 'react-hot-toast'
-const Login = () => {
+const Login = ({ darkMode, setDarkMode }) => {
     const [formData,setFormData] = useState({
     identifier:'',
     password:'',
