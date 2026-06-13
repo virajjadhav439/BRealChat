@@ -21,6 +21,8 @@ const io = new Server(server,{
         origin:"http://localhost:5173"
     }
 })
+const onlineUsers =  new Map()
+
 // Create Listener
 io.on("connection",(socket)=>{
     // Add Listner
@@ -32,6 +34,27 @@ io.on("connection",(socket)=>{
             "receiveMessage",message
         )
         
+    })
+    // Track online users
+    socket.on("addUser",(userId)=>{
+        onlineUsers.set(userId,socket.id)
+    })
+    // Register Users
+    io.emit(
+        "onlineUsers",
+        Array.from(
+            onlineUsers.keys()
+        )
+    )
+    // Handle disconnect
+    socket.on("disconnect",()=>{
+        for(let [userId,socketId] of onlineUsers){
+            if (socketId===socket.id) {
+                onlineUsers.delete(userId)
+                break
+            }
+        }
+        io.emit("onlineUsers",Array.from(onlineUsers.keys()))
     })
 })
 

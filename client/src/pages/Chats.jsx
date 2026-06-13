@@ -10,7 +10,8 @@ const Chats = ({ darkMode, setDarkMode }) => {
     const [text,setText]=useState('')  
     const [search,setSearch] =useState('')
     const messagesEndRef =useRef(null)
-    
+    const [onlineUsers,setOnlineUsers]= useState([])
+
     // Information OF Current User
     const currentUser = JSON.parse(
         localStorage.getItem("user")
@@ -171,6 +172,22 @@ useEffect(()=>{
     }
 
 },[])
+//Registers Users "Who Am i"
+useEffect(()=>{
+    socket.emit("addUser",currentUser._id)
+},[])
+
+// Listen For Online Users
+useEffect(()=>{
+    socket.on("onlineUsers",(users)=>{
+        console.log("Online Users: ",users);
+        setOnlineUsers(users)
+    })
+    return ()=>{
+        socket.off("onlineUsers")
+    }
+},[])
+
   return (<>
     {/* Chats page */}
     <div>
@@ -229,22 +246,44 @@ useEffect(()=>{
                 </div>
                 {/* Usernames */}
                 {
-    filteredUsers.map((user)=>(
-        <div
-  key={user._id}
-  className={`p-3 rounded-lg cursor-pointer transition ${
-    selectedUser?._id === user._id
-      ? "bg-green-500 text-white"
-      : darkMode
-      ? "hover:bg-zinc-700"
-      : "hover:bg-gray-100"
-  }`}
->
-            <h3 onClick={()=>handleUserSelect(user)}>
-                {user.username}
-            </h3>
+  filteredUsers.map((user) => {
+
+    const isOnline =
+      onlineUsers.includes(user._id)
+
+    return (
+      <div
+        key={user._id}
+        onClick={() => handleUserSelect(user)}
+        className={`p-3 rounded-lg cursor-pointer transition ${
+          selectedUser?._id === user._id
+            ? "bg-green-500 text-white"
+            : darkMode
+            ? "hover:bg-zinc-700"
+            : "hover:bg-gray-100"
+        }`}
+      >
+
+        <div className="flex items-center gap-2">
+
+          <div
+            className={`w-3 h-3 rounded-full ${
+              isOnline
+                ? "bg-green-500"
+                : "bg-gray-400"
+            }`}
+          />
+
+          <h3>
+            {user.username}
+          </h3>
+
         </div>
-    ))
+
+      </div>
+    )
+
+  })
 }
             </div>
         </div>
