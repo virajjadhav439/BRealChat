@@ -228,7 +228,7 @@ socket.on("userStoppedTyping",()=>{
 
             {/* Users Container - sidebar */}
         <div
-  className={`w-1/4 p-4 border-r ${
+  className={`w-1/3 md:w-1/4 p-4 border-r ${
     darkMode
       ? "border-zinc-700 bg-zinc-800"
       : "border-gray-300 bg-white"
@@ -236,18 +236,18 @@ socket.on("userStoppedTyping",()=>{
 >
             {/* Users Heading */}
             <div className="flex justify-between items-center mb-4">
-  <h1 className="text-2xl font-bold">
+  <h1 className="text-xl md:text-2xl font-bold">
     Chats
   </h1>
 
   <button
     onClick={() => setDarkMode(!darkMode)}
-    className="px-3 py-1 rounded bg-green-300 text-white"
+    className="ml-0.5 px-1 md:px-3 py-1 rounded bg-green-300 text-white"
   >
     {darkMode ? "☀️" : "🌙"}
   </button>
 </div>
-
+  
             {/* Search Box */}
             <div className=''>
                 {/* Search Input */}
@@ -267,9 +267,6 @@ socket.on("userStoppedTyping",()=>{
             {/* User Container inside is the User Array */}
             <div className="space-y-2 cursor-pointer">
                 {/* Profile Photo */}
-                <div>   
-
-                </div>
                 {/* Usernames */}
                 {
   filteredUsers.map((user) => {
@@ -291,7 +288,7 @@ socket.on("userStoppedTyping",()=>{
       >
 
         <div className="flex items-center gap-2">
-
+        
           <div
             className={`w-3 h-3 rounded-full ${
               isOnline
@@ -299,7 +296,9 @@ socket.on("userStoppedTyping",()=>{
                 : "bg-gray-400"
             }`}
           />
-
+<div className="w-8 h-8 rounded-full bg-green-400 text-white flex items-center justify-center font-bold">
+    {user.username[0].toUpperCase()}
+</div>
           <h3>
             {user.username}
           </h3>
@@ -315,31 +314,48 @@ socket.on("userStoppedTyping",()=>{
         </div>
 
         {/* Chat window Container */}
-        <div className='flex-1 flex flex-col'>
-
-            {/* Chat Window Heading */}
-            <h1
-  className={`p-4 text-xl font-semibold border-b ${
+        <div className='flex-1 flex flex-col overflow-hidden h-screen '>
+            {/* Profile Picture */}
+        
+{/* Chat Window Header */}
+<div
+  className={`p-4 border-b ${
     darkMode
       ? "border-zinc-700"
       : "border-gray-300"
   }`}
 >
-    {selectedUser
-        ? selectedUser.username
-        : "Select a Chat"}
+  <div className="flex items-center gap-3">
 
-{
-    isTyping && (
-        <p className="text-sm text-gray-500 px-0.5">
-            {typingUser} Typing...
-        </p>
-    )
-}
-</h1>
+    {/* Profile Picture */}
+    <div className="w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center font-bold">
+      {selectedUser?.username?.[0]?.toUpperCase() || "?"}
+    </div>
+
+    {/* User Info */}
+    <div>
+
+      <h1 className="text-xl font-semibold">
+        {selectedUser
+          ? selectedUser.username
+          : "Select a Chat"}
+      </h1>
+
+      <div className="h-5">
+        {isTyping && (
+          <p className="text-xs text-gray-500">
+            {typingUser} is typing...
+          </p>
+        )}
+      </div>
+
+    </div>
+
+  </div>
+</div>
 
             {/* Chat Container */}
-            <div>
+            <div className='overflow-y-auto'>
             {/* one Message one Div */}
             <div className='flex-1 p-4'>
             {
@@ -382,43 +398,47 @@ socket.on("userStoppedTyping",()=>{
 }
 <div ref={messagesEndRef}></div>
             </div>
+            </div>
+            {/* TextArea + Button Wrapped */}
+        <div className={`p-3 border-t ${darkMode?"border-zinc-700":"border-gray-300"} shrink-0`}>
+
             {/* Text Box */}
             <textarea
   value={text}
   onChange={(e)=>{
-    
-    
-    setText(e.target.value)
-
-    socket.emit("typing",currentUser.username)
-    
-    clearTimeout(typingTimeoutRef.current)
-
-    typingTimeoutRef.current = setTimeout(()=>{
-
-        socket.emit(
-            "stopTyping"
-        )
-
-    },1000)
-    
-  }}
-  placeholder="Type a message..."
-  className={`w-full p-3 rounded-lg border outline-none ${
-    darkMode
-      ? "bg-zinc-800 border-zinc-700 text-white"
-      : "bg-white border-gray-300"
-  }`}
+      
+      
+      setText(e.target.value)
+      
+      socket.emit("typing",currentUser.username)
+      
+      clearTimeout(typingTimeoutRef.current)
+      
+      typingTimeoutRef.current = setTimeout(()=>{
+          
+          socket.emit(
+              "stopTyping"
+            )
+            
+        },1000)
+        
+    }}
+    placeholder="Type a message..."
+    className={`w-full p-3 rounded-lg border outline-none ${
+        darkMode
+        ? "bg-zinc-800 border-zinc-700 text-white"
+        : "bg-white border-gray-300"
+    }`}
 />
             {/* Send Button */}
             <button
   onClick={sendMessage}
-  className='bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg cursor-pointer transition'
+  className='mt-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg cursor-pointer transition'
 >
   Send
 </button>
+    </div>
             
-            </div>
         </div>
 
         </div>
