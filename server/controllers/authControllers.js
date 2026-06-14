@@ -107,8 +107,12 @@ const googleLogin = async (req,res)=>{
                 googleId:payload.sub,
             })
         }
-        // Create token and return it 
-        const token =jwt.sign({ id:user._id },process.env.JWT_SECRET)
+        // Create Token and Return it 
+        const token = jwt.sign({
+            userId:user._id
+        },process.env.JWT_SECRET,{
+            expiresIn:'7d'
+        })
         return res.status(200).json({
             token,user
         })

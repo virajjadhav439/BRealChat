@@ -40,6 +40,7 @@ const createConversation = async (req,res)=>{
 }
 
 const getConversation = async (req,res)=>{
+    
     try {
         const conversations =  await Conversation.find({
             participants:req.user.userId

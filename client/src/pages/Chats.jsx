@@ -290,13 +290,13 @@ socket.on("userStoppedTyping",()=>{
         <div className="flex items-center gap-2">
         
           <div
-            className={`w-3 h-3 rounded-full ${
+            className={`w-2 h-2 md:w-3 md:h-3 rounded-full ${
               isOnline
                 ? "bg-green-500"
                 : "bg-gray-400"
             }`}
           />
-<div className="w-8 h-8 rounded-full bg-green-400 text-white flex items-center justify-center font-bold">
+<div className="w-4 h-4 md:w-8 md:h-8 rounded-full bg-green-400 text-white flex items-center justify-center font-bold">
     {user.username[0].toUpperCase()}
 </div>
           <h3>
