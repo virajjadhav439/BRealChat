@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+const {OAuth2Client} = require('google-auth-library');
 
 const signUpUser = async(req,res)=>{
     try {
@@ -85,8 +86,42 @@ const loginUser = async(req,res)=>{
     }
 }
 
+const googleLogin = async (req,res)=>{
+    try {
+        const { token: googleToken } = req.body
+        // Create Google Client
+        const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
+        // Create a Ticket from the client 
+        const ticket = await client.verifyIdToken({
+            idToken: googleToken,audience:process.env.GOOGLE_CLIENT_ID
+        })
+        // Create a Payload via the Ticket
+        const payload = ticket.getPayload()
+        // User Exists
+        let user = await User.findOne({email: payload.email})
+        // User Does not Exists
+        if (!user) {
+            user = await User.create({
+                username:payload.name,
+                email:payload.email,
+                googleId:payload.sub,
+            })
+        }
+        // Create token and return it 
+        const token =jwt.sign({ id:user._id },process.env.JWT_SECRET)
+        return res.status(200).json({
+            token,user
+        })
+    } catch (error) {
+        return res.status(500).json({
+            error:error.message
+        })
+    }
+}   
+
 
 module.exports = {
     signUpUser,
     loginUser,
+    googleLogin,
 }
