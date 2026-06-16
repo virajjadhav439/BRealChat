@@ -49,7 +49,42 @@ const getMessage = async (req,res)=>{
     }
 }
 
+const markMessageAsSeen = async (req,res)=>{
+try {
+
+    const conversationId =
+    req.params.conversationId
+
+    const result =
+    await Message.updateMany(
+    {
+        conversationId,
+        sender:{
+            $ne:req.user.userId
+        }
+    },
+    {
+        seen:true
+    })
+
+    return res.status(200).json({
+        message:"Messages Seen"
+    })
+
+    io.emit("messagesSeen",{
+        conversationId
+    })
+} catch(error){
+
+    return res.status(500).json({
+        error:error.message
+    })
+
+}
+}
+
 module.exports = {
     sendMessage,
     getMessage,
+    markMessageAsSeen,
 }

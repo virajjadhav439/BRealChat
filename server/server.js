@@ -7,6 +7,7 @@ const conversationRoutes = require('./routes/conversationRoutes')
 const messageRoutes = require('./routes/messageRoutes')
 const http = require('http');
 const { Server } = require('socket.io');
+const { default: socket } = require('../client/src/socket/socket');
 
 
 require('dotenv').config()
@@ -62,12 +63,15 @@ io.on("connection",(socket)=>{
     })
 
     socket.on("stopTyping",()=>{
-        io.emit(
-            "userStoppedTyping"
-        )
+        io.emit("userStoppedTyping")
     })
 
+    socket.on("messagesSeen",(conversationId)=>{
+        io.emit("messagesSeen",conversationId)
+    })
 })
+
+
 
 app.use(cors())
 app.use(express.json())

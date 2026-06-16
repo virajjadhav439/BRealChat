@@ -70,7 +70,16 @@ const Chats = ({ darkMode, setDarkMode }) => {
         // Fetch Conversation
         setConversation(response.data)
         
+        await API.put(`/messages/seen/${response.data._id}`,{},{
+          headers:{
+            Authorization:`Bearer ${token}`
+          }
+        })
+        socket.emit("messagesSeen",response.data._id)
+        console.log("EMITTING",response.data._id)
     }
+
+
 
     const fetchMessages = async (conversationId)=>{
         try {
@@ -117,7 +126,8 @@ const Chats = ({ darkMode, setDarkMode }) => {
         "sendMessage",
         {
             text:text,
-            sender:currentUser._id
+            sender:currentUser._id,
+            conversationId:conversation._id
         }
     )
 
@@ -143,10 +153,6 @@ const Chats = ({ darkMode, setDarkMode }) => {
 useEffect(() => {
 
     socket.on("connect", () => {
-        console.log(
-            "Connected:",
-            socket.id
-        )
     })
 
 }, [])
@@ -155,8 +161,9 @@ useEffect(()=>{
 
     socket.on(
         "receiveMessage",
-        (message)=>{
-
+        async (message)=>{
+          console.log(message);
+          
             setMessages((prev)=>[
                 ...prev,
                 {
@@ -166,6 +173,31 @@ useEffect(()=>{
                 }
             ])
 
+            if(
+                conversation?._id ===
+                message.conversationId
+            ){
+
+                const token =
+                localStorage.getItem("token")
+
+                await API.put(
+                    `/messages/seen/${message.conversationId}`,
+                    {},
+                    {
+                        headers:{
+                            Authorization:
+                            `Bearer ${token}`
+                        }
+                    }
+                )
+
+                socket.emit(
+                    "messagesSeen",
+                    message.conversationId
+                )
+            }
+
         }
     )
 
@@ -173,7 +205,7 @@ useEffect(()=>{
         socket.off("receiveMessage")
     }
 
-},[])
+},[conversation])
 //Registers Users "Who Am i"
 useEffect(()=>{
     socket.emit("addUser",currentUser._id)
@@ -213,6 +245,37 @@ socket.on("userStoppedTyping",()=>{
     setTypingUser("")
 })
 
+useEffect(()=>{
+
+    socket.on(
+    "messagesSeen",
+    async (conversationId)=>{
+
+        console.log(
+            "RECEIVED",
+            conversationId
+        )
+
+        if(
+            conversation?._id ===
+            conversationId
+        ){
+            console.log(
+                "FETCHING"
+            )
+
+            await fetchMessages(conversationId)
+        }
+        console.log(messages);
+        
+    }
+)
+
+    return ()=>{
+        socket.off("messagesSeen")
+    }
+
+},[conversation])
 
   return (<>
     {/* Chats page */}
@@ -314,7 +377,7 @@ socket.on("userStoppedTyping",()=>{
         </div>
 
         {/* Chat window Container */}
-        <div className='flex-1 flex flex-col overflow-hidden h-screen '>
+        <div className = 'flex-1 flex flex-col overflow-hidden h-screen '>
             {/* Profile Picture */}
         
 {/* Chat Window Header */}
@@ -390,6 +453,13 @@ socket.on("userStoppedTyping",()=>{
           `}
         >
           {message.text}
+          {isMyMessage && (
+            <div className='text-xs text-right mt-1'>
+              {message.seen ? "✓✓":"✓"}
+            </div>
+          )
+          }
+          
         </div>
       </div>
     )
