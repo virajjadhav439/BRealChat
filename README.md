@@ -32,10 +32,6 @@ A full-stack real-time messaging application built using the MERN Stack and Sock
 - JWT
 - Google OAuth
 
-## 📸 Screenshots
-
-(Add screenshots here)
-
 ## 🌐 Live Demo
 
 Frontend: https://your-vercel-url.vercel.app
