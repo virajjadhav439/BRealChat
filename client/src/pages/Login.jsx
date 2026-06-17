@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import {useNavigate} from 'react-router-dom'
+import {Link, useNavigate} from 'react-router-dom'
 import API from '../api/api'
 import toast from 'react-hot-toast'
 import { GoogleLogin } from '@react-oauth/google'
@@ -102,6 +102,12 @@ const handleSubmit = async (e)=>{
           >
             Login
           </button>
+          <p className='flex justify-center m-2 text-gray-500'>
+            Don't Have a Account?
+          <Link className='underline' to="/signup">
+            Signup
+          </Link>
+          </p>
         </form>
       <div className='mt-4 flex justify-center'>
         <GoogleLogin

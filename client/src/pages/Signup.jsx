@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import API from '../api/api'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 
 const Signup = ({ darkMode, setDarkMode }) => {
@@ -128,6 +128,13 @@ const handleSubmit = async (e)=>{
           >
             Signup
           </button>
+          <p className='flex justify-center m-2 text-gray-500'>
+            Already have a Account?
+          <Link className='underline' to="/login">
+            Login
+          </Link>
+          
+          </p>
         </form>
       </div>
     </div>
