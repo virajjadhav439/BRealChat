@@ -7,8 +7,6 @@ const conversationRoutes = require('./routes/conversationRoutes')
 const messageRoutes = require('./routes/messageRoutes')
 const http = require('http');
 const { Server } = require('socket.io');
-const { default: socket } = require('../client/src/socket/socket');
-
 
 require('dotenv').config()
 
