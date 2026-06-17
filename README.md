@@ -1,24 +1,28 @@
 # BRealChat
 
-A real-time chat application built with the MERN Stack and Socket.IO.
-This is My Second Internship Project.
+A full-stack real-time messaging application built using the MERN Stack and Socket.IO.
 
-## Features
+## 🚀 Features
 
 - JWT Authentication
+- Google OAuth Authentication
 - Real-Time Messaging
-- Online/Offline Status
+- Online / Offline Presence
 - Typing Indicators
+- Message Read Receipts
 - Persistent Chat History
-- Responsive UI
-- Dark/Light Theme
+- Responsive Mobile-Friendly UI
+- Dark / Light Theme
+- Modern Landing Page
 
-## Tech Stack
+## 🛠️ Tech Stack
 
 ### Frontend
 - React
 - Tailwind CSS
 - Socket.IO Client
+- Framer Motion
+- React Router DOM
 
 ### Backend
 - Node.js
@@ -26,3 +30,23 @@ This is My Second Internship Project.
 - MongoDB
 - Socket.IO
 - JWT
+- Google OAuth
+
+## 🌐 Live Demo
+
+Frontend: https://your-vercel-url.vercel.app
+
+Backend: https://brealchat.onrender.com
+
+## 📚 What I Learned
+
+- Building real-time applications with Socket.IO
+- JWT and Google OAuth authentication
+- Read receipts and typing indicators
+- State management in React
+- Deployment using Render and Vercel
+- Responsive UI design
+
+## 👨‍💻 Author
+
+Viraj Jadhav
