@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const User = require('../models/user');
+const User = require('../models/User');
 const {OAuth2Client} = require('google-auth-library');
 
 const signUpUser = async(req,res)=>{
