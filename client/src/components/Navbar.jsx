@@ -41,8 +41,8 @@ ${
       className="
       w-8
       h-8
-      md:w-20
-      md:h-20
+      md:w-10
+      md:h-10
       rounded-full
       bg-green-500
       text-white
@@ -51,8 +51,8 @@ ${
       justify-center
       font-bold
       text-m
-      md:text-4xl
-
+      md:text-xl
+      
       "
     >
       B
