@@ -6,7 +6,7 @@ const {OAuth2Client} = require('google-auth-library');
 const signUpUser = async(req,res)=>{
     try {
         //fetch the Details
-        const {username,email,password,profilePic} = req.body
+        const {username,email,password,profilePic,publicKey} = req.body
         //Check If Username and email already exists
         const existingUsername = await User.findOne({username})
         if (existingUsername) {
@@ -24,7 +24,7 @@ const signUpUser = async(req,res)=>{
         const hashedPassword = await bcrypt.hash(password,10)
         //Create User in the DB
         const user = await User.create({
-            username,email,password:hashedPassword,profilePic,
+            username,email,password:hashedPassword,profilePic,publicKey
         })
         return res.status(201).json({
             message:"SignUp Succesful"
@@ -74,7 +74,8 @@ const loginUser = async(req,res)=>{
         _id:user._id,
         username:user.username,
         email:user.email,
-        profilePic:user.profilePic
+        profilePic:user.profilePic,
+        publicKey:user.publicKey
     }
             })
             

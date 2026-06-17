@@ -3,7 +3,7 @@ const Message = require("../models/Message")
 
 const sendMessage = async (req,res)=>{
     try {
-
+        //Fetch the Details
         const {conversationId,text} = req.body
 
         const message = await Message.create({
@@ -11,7 +11,7 @@ const sendMessage = async (req,res)=>{
             sender:req.user.userId,
             text
         })
-
+        
         await Conversation.findByIdAndUpdate(conversationId,
     {
         lastMessage:text

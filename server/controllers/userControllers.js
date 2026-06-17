@@ -3,7 +3,7 @@ const User = require("../models/User")
 const getAllUsers = async (req,res)=>{
     try {
         const users = await User.find()
-            .select('username email profilePic')
+            .select('username email profilePic publicKey')
 
         return res.status(200).json(users)
 

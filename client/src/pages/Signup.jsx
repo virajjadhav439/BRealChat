@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import API from '../api/api'
 import { Link, useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
-
+import * as openpgp from 'openpgp'
 const Signup = ({ darkMode, setDarkMode }) => {
     const [formData,setFormData] = useState({
         username:'',
@@ -26,11 +26,24 @@ const handleSubmit = async (e)=>{
       if(formData.password !== formData.confirmPassword){
     return toast.error("Passwords do not match")
 }
+//Generate Key Pair
+const {privateKey,publicKey}=await openpgp.generateKey({
+  type:'ecc',
+  curve:'curve25519',
+  userIDs:[{
+    name:formData.username,
+    email:formData.email,
+  }]
+})
+//Store Private Key Locally
+localStorage.setItem("privateKey",privateKey)
+
             //  send post request to backend/server
             await API.post('/auth/signup',{
             username: formData.username,
             email: formData.email,
-            password: formData.password
+            password: formData.password,
+            publicKey,
         })
         
         //login successful confirmation message

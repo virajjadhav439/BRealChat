@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import API from '../api/api'
 import socket from '../socket/socket'
-
+import * as openpgp from 'openpgp'
 
 const Chats = ({ darkMode, setDarkMode }) => {
     const [users,setUsers] = useState([])
@@ -53,7 +53,9 @@ const Chats = ({ darkMode, setDarkMode }) => {
     }
 
     const handleUserSelect = async(user)=>{
+
         setSelectedUser(user)
+        
         const token = localStorage.getItem('token')
 
         const response = await API.post(
@@ -76,7 +78,7 @@ const Chats = ({ darkMode, setDarkMode }) => {
           }
         })
         socket.emit("messagesSeen",response.data._id)
-        console.log("EMITTING",response.data._id)
+        
     }
 
 
@@ -90,7 +92,49 @@ const Chats = ({ darkMode, setDarkMode }) => {
                     Authorization:`Bearer ${token}`
                 }
             })
-            setMessages(response.data)
+            
+            const privateKey = await openpgp.readPrivateKey({
+    armoredKey:localStorage.getItem("privateKey")
+})
+
+const decryptedMessages =
+await Promise.all(
+response.data.map(async(msg)=>{
+
+try{
+
+const message =
+await openpgp.readMessage({
+    armoredMessage:msg.text
+})
+
+const { data } =
+await openpgp.decrypt({
+    message,
+    decryptionKeys:privateKey
+})
+
+return {
+    ...msg,
+    text:data
+}
+
+}catch(error){
+
+console.log("FAILED MESSAGE")
+console.log(msg)
+
+return {
+    ...msg,
+    text:"[DECRYPT FAILED]"
+}
+
+}
+
+})
+)
+
+setMessages(decryptedMessages)
             
             
         } catch (error) {
@@ -108,12 +152,30 @@ const Chats = ({ darkMode, setDarkMode }) => {
     if(!text.trim()) return
 
     const token = localStorage.getItem("token")
+    
+    const receiverKey = await openpgp.readKey({
+    armoredKey:selectedUser.publicKey
+})
+
+const senderKey = await openpgp.readKey({
+    armoredKey:currentUser.publicKey
+})
+
+const encryptedText = await openpgp.encrypt({
+    message: await openpgp.createMessage({
+        text
+    }),
+    encryptionKeys:[
+        receiverKey,
+        senderKey
+    ]
+})
 
     await API.post(
         "/messages",
         {
             conversationId:conversation._id,
-            text:text
+            text:encryptedText
         },
         {
             headers:{
@@ -125,7 +187,7 @@ const Chats = ({ darkMode, setDarkMode }) => {
     socket.emit(
         "sendMessage",
         {
-            text:text,
+            text:encryptedText,
             sender:currentUser._id,
             conversationId:conversation._id
         }
@@ -162,21 +224,15 @@ useEffect(()=>{
     socket.on(
         "receiveMessage",
         async (message)=>{
-          console.log(message);
-          
-            setMessages((prev)=>[
-                ...prev,
-                {
-                    _id:Date.now(),
-                    text:message.text,
-                    sender:message.sender
-                }
-            ])
 
             if(
                 conversation?._id ===
                 message.conversationId
             ){
+
+                await fetchMessages(
+                    message.conversationId
+                )
 
                 const token =
                 localStorage.getItem("token")
@@ -250,23 +306,13 @@ useEffect(()=>{
     socket.on(
     "messagesSeen",
     async (conversationId)=>{
-
-        console.log(
-            "RECEIVED",
-            conversationId
-        )
-
         if(
             conversation?._id ===
             conversationId
         ){
-            console.log(
-                "FETCHING"
-            )
-
             await fetchMessages(conversationId)
         }
-        console.log(messages);
+        
         
     }
 )
