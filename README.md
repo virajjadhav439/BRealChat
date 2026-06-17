@@ -5,15 +5,15 @@ A full-stack real-time messaging application built using the MERN Stack and Sock
 ## 🚀 Features
 
 - JWT Authentication
-- Google OAuth Authentication
+- Google OAuth
 - Real-Time Messaging
-- Online / Offline Presence
+- End-to-End Encryption (OpenPGP)
+- Online/Offline Status
 - Typing Indicators
-- Message Read Receipts
+- Message Seen Indicators
 - Persistent Chat History
-- Responsive Mobile-Friendly UI
-- Dark / Light Theme
-- Modern Landing Page
+- Responsive UI
+- Dark/Light Theme
 
 ## 🛠️ Tech Stack
 
