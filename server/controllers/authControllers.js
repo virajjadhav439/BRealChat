@@ -115,8 +115,15 @@ const googleLogin = async (req,res)=>{
             expiresIn:'7d'
         })
         return res.status(200).json({
-            token,user
-        })
+    token,
+    user:{
+        _id:user._id,
+        username:user.username,
+        email:user.email,
+        profilePic:user.profilePic,
+        publicKey:user.publicKey
+    }
+})
     } catch (error) {
         return res.status(500).json({
             error:error.message
