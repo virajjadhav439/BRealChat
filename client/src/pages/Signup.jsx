@@ -3,6 +3,8 @@ import API from '../api/api'
 import { Link, useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import * as openpgp from 'openpgp'
+import { GoogleLogin } from '@react-oauth/google'
+
 const Signup = ({ darkMode, setDarkMode }) => {
     const [formData,setFormData] = useState({
         username:'',

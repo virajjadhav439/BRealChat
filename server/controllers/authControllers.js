@@ -89,6 +89,7 @@ const loginUser = async(req,res)=>{
 
 const googleLogin = async (req,res)=>{
     try {
+        // fetch google token and public key from the frontend
         const { token: googleToken } = req.body
         // Create Google Client
         const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
@@ -98,15 +99,21 @@ const googleLogin = async (req,res)=>{
         })
         // Create a Payload via the Ticket
         const payload = ticket.getPayload()
+        //Pay load has all the Details of the User for usage
         // User Exists
         let user = await User.findOne({email: payload.email})
+
         // User Does not Exists
         if (!user) {
+            //Add Public Key to the new user
+            const encryptedKey = 
             user = await User.create({
                 username:payload.name,
                 email:payload.email,
                 googleId:payload.sub,
+                publicKey:publicKey,
             })
+            
         }
         // Create Token and Return it 
         const token = jwt.sign({
@@ -131,9 +138,24 @@ const googleLogin = async (req,res)=>{
     }
 }   
 
+const updatePublicKey =
+async(req,res)=>{
+
+    await User.findByIdAndUpdate(
+        req.user.userId,
+        {
+            publicKey:req.body.publicKey
+        }
+    )
+
+    return res.status(200).json({
+        message:"Public Key Saved"
+    })
+}
 
 module.exports = {
     signUpUser,
     loginUser,
     googleLogin,
+    updatePublicKey,
 }

@@ -109,33 +109,7 @@ const handleSubmit = async (e)=>{
           </Link>
           </p>
         </form>
-      <div className='mt-4 flex justify-center'>
-        <GoogleLogin
-        onSuccess={async (credentialResponse)=>{
-          try {
-      const response = await API.post('/auth/google',{
-        token:credentialResponse.credential
-      })
-      localStorage.setItem("token",response.data.token)
-      localStorage.setItem("user",JSON.stringify(response.data.user))
-    
-    //login successful confirmation message
-toast.success("Account login Successfully")
-navigate('/Chats')
-
-    } catch (error) {
-      toast.error(
-        error?.response?.data?.message ||
-        "Google Login Failed"
-      )
-      console.log(error);
       
-    }
-        }}
-        onError={()=>{
-          console.log("Google Login Failed");
-        }}/>
-      </div>
       </div>
     </div>
   </>

@@ -97,6 +97,7 @@ const Chats = ({ darkMode, setDarkMode }) => {
     armoredKey:localStorage.getItem("privateKey")
 })
 
+
 const decryptedMessages =
 await Promise.all(
 response.data.map(async(msg)=>{
@@ -114,19 +115,18 @@ await openpgp.decrypt({
     decryptionKeys:privateKey
 })
 
+console.log(data);
 return {
     ...msg,
     text:data
 }
 
-}catch(error){
 
-console.log("FAILED MESSAGE")
-console.log(msg)
+}catch(error){
 
 return {
     ...msg,
-    text:"[DECRYPT FAILED]"
+    text:"[DECRYPT FAILED]",
 }
 
 }
@@ -160,6 +160,8 @@ setMessages(decryptedMessages)
 const senderKey = await openpgp.readKey({
     armoredKey:currentUser.publicKey
 })
+
+
 
 const encryptedText = await openpgp.encrypt({
     message: await openpgp.createMessage({
